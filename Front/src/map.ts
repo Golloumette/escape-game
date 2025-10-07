@@ -1,13 +1,11 @@
 
-
-// 1) On importe la grille et les constantes depuis le fichier auto-généré
 import {
   GRID,
   DOORS as IMPORTED_DOORS,
   WIDTH,
   HEIGHT,
   CELL,
-  TILES,           // { WALL:'#', FLOOR:'.', DOOR:'D', VOID:'"' }
+  TILES,          
 } from "./generated_map_v3";
 
 // 2) Types "jeu"
@@ -55,7 +53,7 @@ export interface MapData {
 
 // 3) Helpers lisibles
 export function isVoid(c: string | null): boolean {
-  return c === TILES.VOID; // symbole " pour le vide/transparent
+  return c === TILES.VOID;
 }
 export function isWall(c: string | null): boolean {
   return c === TILES.WALL;
@@ -64,7 +62,6 @@ export function isDoor(c: string | null): boolean {
   return c === TILES.DOOR;
 }
 export function isFloorLike(c: string | null): boolean {
-  // sol ou porte (porte gérée ouverte/fermée côté logique)
   return c === TILES.FLOOR || c === TILES.DOOR;
 }
 export function isWalkable(c: string | null): boolean {

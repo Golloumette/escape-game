@@ -1,5 +1,9 @@
-// Auto-generated from Piskel by a converter script (v3)
-export const TILES = {"WALL":"#","FLOOR":".","DOOR":"D","VOID":"\""} as const;
+
+export const TILES = {
+  "WALL":"#",
+  "FLOOR":".",
+  "DOOR":"D",
+  "VOID":"\""} as const;
 export type TileChar = typeof TILES[keyof typeof TILES];
 
 export const GRID: string[] = [
@@ -41,9 +45,9 @@ export const DOORS = [
   { x: 8, y: 4, locked: true },
   { x: 22, y: 5, locked: true },
   { x: 24, y: 5, locked: true },
-  { x: 31, y: 5, locked: true },
+  { x: 31, y: 5, locked: true,need:'access' },
   { x: 13, y: 6, locked: true},
-  { x: 31, y: 6, locked: true },
+  { x: 31, y: 6, locked: true, need:'access' },
   { x: 25, y: 12, locked: false },
   { x: 30, y: 12, locked: true },
   { x: 25, y: 20, locked: true },
