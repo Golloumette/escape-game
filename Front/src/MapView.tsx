@@ -1,10 +1,10 @@
 import React from "react";
 import { MAP, charAt, isFloorLike } from "./map";
 import type { DoorMeta, Item } from "./map";
-import type { Player } from "./types";   // <-- plus depuis App ! (fini le cycle)
+import type { Player } from "./types";   
 import { TILES } from "./generated_map_v3";
 interface MapViewProps {
-  players: Player[];   // <-- multi-joueur prêt (liste)
+  players: Player[];   
   doors: DoorMeta[];
   items: Item[];
 }

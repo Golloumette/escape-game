@@ -18,8 +18,9 @@ export default function App() {
   // ⬇️ multi-joueur côté front (local) : un tableau de joueurs
   const spawn = findFirstFloor();
   const [players, setPlayers] = useState<Player[]>([
-    { id: "P1", x: spawn.x, y: spawn.y, color: "#b43b3b" },
-    // tu pourras en ajouter d’autres (ex: { id:"P2", x:..., y:..., color:"#3b7bb4" })
+    { id: "P1", x: 23, y:13, color: "#b43b3b" },
+    { id: "P2", x:23, y: 14, color: "#3b7bb4" }
+   
   ]);
 
   const [doors, setDoors]   = useState<DoorMeta[]>(() => MAP.doors.map(d => ({ ...d })));
