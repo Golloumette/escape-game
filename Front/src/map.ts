@@ -25,7 +25,7 @@ export interface Room {
   x1: number; y1: number; x2: number; y2: number;
 }
 
-export interface DoorMeta {
+export interface Doorporte {
   x: number;
   y: number;
   locked: boolean;
@@ -46,7 +46,7 @@ export interface MapData {
   height: number;
   grid: string[];     // lignes de même longueur
   rooms: Room[];
-  doors: DoorMeta[];
+  doors: Doorporte[];
   items: Item[];
   cellSize: number;
 }
@@ -77,28 +77,19 @@ export function charAt(x: number, y: number): string | null {
   return GRID[y][x];
 }
 
-// 5) (Optionnel) Annoter certaines portes importées
-//    L’import auto nous donne x,y,locked:true. On peut enrichir certaines
-//    avec un besoin de clé/carte sans casser l’import.
-const DOOR_REQUIREMENTS: Record<string, { need?: DoorMeta["need"]; locked?: boolean }> = {
-  // Exemple (mets à jour selon TES coordonnées réelles) :
-  // "7,1":  { need: "red",   locked: true },
-  // "26,12":{ need: "access",locked: true },
+
+const DOOR_REQUIREMENTS: Record<string, { need?: Doorporte["need"]; locked?: boolean }> = {
+
 };
 
 // 6) Tes objets (⚠️ vérifie que les coordonnées correspondent à TA nouvelle grille)
 export const ITEMS: Item[] = [
-  // Exemple : ajuste ou vide si tu n’as pas encore placé d’objets
-  // { id: "k-red",  kind: "key-red",     name: "Clé rouge",     x: 4,  y: 2  },
-  // { id: "k-blue", kind: "key-blue",    name: "Clé bleue",     x: 12, y: 6  },
-  // { id: "card-1", kind: "access-card", name: "Carte d'accès", x: 17, y: 10 },
-  // { id: "vac-1",  kind: "vaccine",     name: "Vaccin",        x: 25, y: 2  },
+
 ];
 
 // 7) Tes salles (idem : optionnel et à ajuster)
 export const ROOMS: Room[] = [
-  // { name: "Électricité", x1: 2,  y1: 1,  x2: 7,  y2: 3 },
-  // { name: "Admin",       x1: 11, y1: 1,  x2: 20, y2: 3 },
+ 
 ];
 
 // 8) Construction de la MAP finale
@@ -108,16 +99,24 @@ export const MAP: MapData = {
   grid: GRID,
   cellSize: CELL,
   rooms: ROOMS,
-  doors: IMPORTED_DOORS.map((d) => {
-    const key = `${d.x},${d.y}`;
-    const extra = DOOR_REQUIREMENTS[key];
-    return extra ? { ...d, ...extra } : d;
-  }),
+ doors: IMPORTED_DOORS.map((d) => {
+  const key = `${d.x},${d.y}`;
+  const extra = DOOR_REQUIREMENTS[key];
+  const result: Doorporte = {
+    x: d.x,
+    y: d.y,
+    // locked reste toujours un boolean, on priorise la valeur d'override si présente
+    locked: extra?.locked ?? d.locked,
+    // need est optionnel
+    need: extra?.need,
+  };
+  return result;
+}),
   items: ITEMS,
 };
 
 // 9) Aides de recherche
-export function doorAt(x: number, y: number): DoorMeta | null {
+export function doorAt(x: number, y: number): Doorporte | null {
   return MAP.doors.find((d) => d.x === x && d.y === y) ?? null;
 }
 export function itemsAt(x: number, y: number): Item[] {
