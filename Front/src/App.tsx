@@ -6,6 +6,7 @@ import { TILES } from "./generated_map_v3";
 import ConfirmModal from "./ConfirmModal";
 import DoorModal from "./DoorModal";
 import Puzzle from "./Puzzle";
+import Timer from './Timer';
 
 type Inventory = Set<'vaccine' | 'access-card' | 'key-red' | 'key-blue' | 'key-green'>;
 
@@ -208,6 +209,14 @@ export default function App() {
 
         {/* ===== Sidebar ===== */}
         <aside style={{ background: "#188162ff", border: "1px solid #2a2a2a", borderRadius: 8, padding: 12 }}>
+            <Timer
+                initialSeconds={30 * 60}        
+                autoStart={true}
+                paused={!!doorModal}           // pause automatique si une pop-up s'affiche
+                onExpire={() => {
+                setMsg("⛔ Temps écoulé !");
+      // ici tu peux ouvrir une modale "Game Over", revenir au menu, etc.
+           }}> </Timer>
           <h3>Inventaire P1</h3>
           {invP1.length ? <ul>{invP1.map(k => <li key={k}>{k}</li>)}</ul> : <p>Vide</p>}
 
