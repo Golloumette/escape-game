@@ -1,4 +1,3 @@
-
 import {
   GRID,
   DOORS as IMPORTED_DOORS,
@@ -8,7 +7,7 @@ import {
   TILES,          
 } from "./generated_map_v3";
 
-// 2) Types "jeu"
+
 export type KeyColor = "red" | "blue" | "green";
 export type ItemKind =
   | "vaccine"
@@ -65,11 +64,9 @@ export function isFloorLike(c: string | null): boolean {
   return c === TILES.FLOOR || c === TILES.DOOR;
 }
 export function isWalkable(c: string | null): boolean {
-  // par défaut on considère "marchable" = sol ou porte (le blocage
-  // d'une porte verrouillée est géré dans la logique du déplacement)
+
   return isFloorLike(c);
 }
-
 // 4) Fonctions utilitaires
 export function charAt(x: number, y: number): string | null {
   if (y < 0 || y >= HEIGHT) return null;
@@ -77,16 +74,11 @@ export function charAt(x: number, y: number): string | null {
   return GRID[y][x];
 }
 
-
 const DOOR_REQUIREMENTS: Record<string, { need?: Doorporte["need"]; locked?: boolean }> = {
 
 };
-
-// 6) Tes objets (⚠️ vérifie que les coordonnées correspondent à TA nouvelle grille)
 export const ITEMS: Item[] = [
-
 ];
-
 // 7) Tes salles (idem : optionnel et à ajuster)
 export const ROOMS: Room[] = [
  

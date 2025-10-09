@@ -72,6 +72,7 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("player:leave", { id: pid });
   });
 });
+app.get('/health', (req, res) => res.send('OK'));
 
 const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => console.log("RT server on", PORT));
+server.listen(PORT, () => console.log("Serveur back allumé", PORT));

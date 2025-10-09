@@ -5,17 +5,15 @@ import type { Player } from "./types";
 import { TILES } from "./generated_map_v3";
 import ConfirmModal from "./ConfirmModal";
 import { connectNet, Net } from "./network";
+import Timer from "./Timer";
 
 type Inventory = Set<"vaccine" | "access-card" | "key-red" | "key-blue" | "key-green">;
 
-// 1) Server URL :
-// - Dev local: "http://localhost:4000"
-// - Serveur distant: "http://IP_DU_SERVEUR:4000"
-// - Prod (recommandé): dans .env : VITE_SERVER_URL="https://ton-domaine.fr" (derrière Nginx)
-// On lit l'env d'abord, sinon fallback localhost:
-const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:4000";
+
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://10.56.40.183:4000";
 type DoorKey = string; // "x,y"
 const PLAYER_COLORS = ["#b43b3b", "#3b7bb4", "#3bb45b", "#b4a33b", "#883bb4", "#b43b84"];
+
 function mergeDoors(localDoors: Doorporte[], remoteDoors: Doorporte[]): Doorporte[] {
   const byKey = new Map<DoorKey, Doorporte>();
   for (const d of localDoors) byKey.set(`${d.x},${d.y}`, d);
@@ -65,12 +63,22 @@ export default function App() {
   const netRef = useRef<Net | null>(null);
   const myIdRef = useRef<string>("");
 
+  function getOrCreateClientId(): string {
+  const k = 'client_id';
+  const saved = localStorage.getItem(k);
+  if (saved) return saved;
+  const id = (typeof crypto?.randomUUID === 'function')
+    ? crypto.randomUUID()
+    : `uid-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,10)}`;
+  localStorage.setItem(k, id);
+  return id;
+}
   // Crée un joueur local (position initiale à ajuster si tu veux)
   const spawnX = 23, spawnY = 13;
   useEffect(() => {
     const colorIndex = Math.floor(Math.random() * PLAYER_COLORS.length);
     const me: Player = {
-      id: crypto.randomUUID(), // ID unique navigateur
+      id: getOrCreateClientId(), // ID unique navigateur
       x: spawnX,
       y: spawnY,
       color:PLAYER_COLORS[colorIndex],
@@ -343,6 +351,14 @@ export default function App() {
         </div>
 
         <aside style={{ background: "#188162ff", border: "1px solid #2a2a2a", borderRadius: 8, padding: 12 }}>
+           <Timer
+                initialSeconds={30 * 60}        
+                autoStart={true}
+                paused={!!doorModal}           // pause automatique si une pop-up s'affiche
+                onExpire={() => {
+                setMsg("⛔ Temps écoulé !");
+      // ici tu peux ouvrir une modale "Game Over", revenir au menu, etc.
+    }}></Timer>
           <h3 style={{ marginTop: 0 }}>Inventaire (toi)</h3>
           {invMine.length ? <ul>{invMine.map(k => <li key={k}>{k}</li>)}</ul> : <p style={{ opacity: 0.8 }}>Vide</p>}
           <h3>Infos</h3>

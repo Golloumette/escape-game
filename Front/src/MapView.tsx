@@ -3,6 +3,13 @@ import { MAP, charAt, isFloorLike } from "./map";
 import type { Doorporte, Item } from "./map";
 import type { Player } from "./types";   
 import { TILES } from "./generated_map_v3";
+
+console.log('TILES =', TILES);
+console.log('MAP.width =', MAP.width, 'cellSize =', MAP.cellSize);
+console.log('ligne0 =', MAP.grid[0]);
+console.log('chars uniques =', Array.from(new Set(MAP.grid.join('').split(''))));
+
+
 interface MapViewProps {
   players: Player[];   
   doors:Doorporte[];
@@ -62,22 +69,36 @@ export default function MapView({ players, doors, items }: MapViewProps) {
     width: "fit-content",
     boxShadow: "0 0 12px rgba(0,0,0,0.4)"
   };
+  const charToKind = (c: string) => {
+  // normalisation (adaptable à ta convention)
+  if (c === '#' || c === (TILES as any).WALL) return 'WALL';
+  if (c === 'D' || c === (TILES as any).DOOR) return 'DOOR';
+  if (c === '.' || c === (TILES as any).FLOOR) return 'FLOOR';
+  if (c === ' ' || c === (TILES as any).VOID)  return 'VOID';
+  return 'OTHER';
+};
+const kindToColor = (kind: string, x: number, y: number) => {
+  switch (kind) {
+    case 'WALL': return '#303030';
+    case 'DOOR': return doorLockedAt(doors, x, y) ? '#6a3a2f' : '#2f6d3a';
+    case 'FLOOR': return '#b0e6c0ff';
+    case 'VOID': return 'transparent';
+    default: return '#1b1b1b';
+  }
+};
 
   return (
     <div style={gridStyle}>
       {MAP.grid.flatMap((row, y) =>
         row.split("").map((c, x) => {
-          const bg =
-            c === TILES.WALL ? "#303030" :
-            c === TILES.DOOR ? (doorLockedAt(doors, x, y) ? "#6a3a2f" : "#2f6d3a") :
-            c === TILES.FLOOR ? "#b0e6c0ff" :
-            c === TILES.VOID ? "transparent" : "#1b1b1b";
+          const kind = charToKind(c);
+          const bg = kindToColor(kind, x, y);
+          const outline = (kind === 'FLOOR' || kind === 'DOOR') ? bordersFor(x, y, doors) : {};
 
           const base: React.CSSProperties = {
             width: MAP.cellSize, height: MAP.cellSize, position:"relative", background: bg
           };
-          const outline = isFloorLike(c) ? bordersFor(x, y, doors) : {};
-
+          
           return (
             <div key={`${x}-${y}`} style={{ ...base, ...outline }}>
               {items.filter(it => it.x === x && it.y === y).map(renderItem)}
