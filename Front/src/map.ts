@@ -25,7 +25,11 @@ export interface DoorMeta {
   locked: boolean;
   need?: KeyColor | "access";
   riddle?: PuzzleDef;
+  /** ✅ Récompense donnée immédiatement à l’ouverture (ex: "vaccine") */
+  reward?: ItemKind;
 }
+
+export interface Item { id: string; kind: ItemKind; name: string; x: number; y: number; }
 
 export interface MapData {
   width: number;
@@ -33,7 +37,7 @@ export interface MapData {
   grid: string[];
   rooms: Room[];
   doors: DoorMeta[];
-  items: any[];
+  items: Item[];
   cellSize: number;
 }
 
@@ -73,11 +77,10 @@ const TF_PUZZLES: PuzzleDef[] = [
   { type: "tf", statement: "L’eau pure est un bon conducteur électrique.", correct: false },
   { type: "tf", statement: "Les antibiotiques n’agissent pas sur les virus.", correct: true },
   { type: "tf", statement: "L’ADN est présent dans le noyau des cellules eucaryotes.", correct: true },
-  { type: "tf", statement: "Le dioxygène représente environ 78% de l’air.", correct: false }, // c'est l'azote ~78%
+  { type: "tf", statement: "Le dioxygène représente environ 78% de l’air.", correct: false }, // azote ~78%
   { type: "tf", statement: "La digestion des lipides implique la bile.", correct: true },
 ];
 
-// Mélange et attribution unique
 function shuffle<T>(array: T[]): T[] {
   return array.map(a => [Math.random(), a] as [number, T])
               .sort((a, b) => a[0] - b[0])
@@ -97,7 +100,16 @@ function getUniquePuzzle(): PuzzleDef {
   return puzzle;
 }
 
-/* ----------------------------- MAP ----------------------------- */
+/* ----------------------------- ITEMS (sol) ----------------------------- */
+/** Tu peux aussi déposer un vaccin “au sol” si tu préfères le ramasser en marchant.
+ *  Exemple (à adapter) :
+ *  { id: "vac-1", kind: "vaccine", name: "Vaccin", x: 26, y: 20 }
+ */
+export const ITEMS: Item[] = [
+  { id: "vac-1", kind: "vaccine", name: "Vaccin", x: 6, y: 4 },
+];
+
+/* ----------------------------- MAP + RÉCOMPENSES ----------------------------- */
 export const MAP: MapData = {
   width: WIDTH,
   height: HEIGHT,
@@ -106,14 +118,27 @@ export const MAP: MapData = {
   rooms: [],
   doors: IMPORTED_DOORS.map((d) => {
     const base: DoorMeta = { ...d };
+
+    // Donner des énigmes à toutes les portes verrouillées hors "access"
     if (base.locked && base.need !== "access") {
       base.riddle = getUniquePuzzle();
     }
+
+    if (base.x === 25 && base.y === 20) {
+      base.reward = "vaccine";
+    }
+
+    if (base.x === 8 && base.y === 4) base.reward = "vaccine";
+    if (base.x === 25 && base.y === 20) base.reward = "vaccine";
+
     return base;
   }),
-  items: [],
+  items: ITEMS,
 };
 
 export function doorAt(x: number, y: number): DoorMeta | null {
   return MAP.doors.find((d) => d.x === x && d.y === y) ?? null;
+}
+export function itemsAt(x: number, y: number): Item[] {
+  return MAP.items.filter((i) => i.x === x && i.y === y);
 }
