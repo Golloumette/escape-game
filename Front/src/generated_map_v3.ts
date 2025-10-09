@@ -48,7 +48,7 @@ export const DOORS = [
   { x: 31, y: 5, locked: true,need:'access' },
   { x: 13, y: 6, locked: true},
   { x: 31, y: 6, locked: true, need:'access' },
-  { x: 25, y: 12, locked: false },
+  { x: 25, y: 12, locked: true },
   { x: 30, y: 12, locked: true },
   { x: 25, y: 20, locked: true },
   { x: 6, y: 21, locked: true },

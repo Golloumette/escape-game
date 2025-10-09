@@ -1,6 +1,6 @@
 import React from "react";
 import { MAP, charAt, isFloorLike } from "./map";
-import type { Doorporte, Item } from "./map";
+import type { DoorMeta, Item } from "./map";
 import type { Player } from "./types";   
 import { TILES } from "./generated_map_v3";
 
@@ -12,18 +12,16 @@ console.log('chars uniques =', Array.from(new Set(MAP.grid.join('').split(''))))
 
 interface MapViewProps {
   players: Player[];   
-  doors:Doorporte[];
+  doors: DoorMeta[];
   items: Item[];
 }
 
-function doorLockedAt(doors: Doorporte[], x: number, y: number): boolean {
+function doorLockedAt(doors: DoorMeta[], x: number, y: number): boolean | null {
   const d = doors.find(dd => dd.x === x && dd.y === y);
-  // ❗ si pas de méta, on considère la porte comme verrouillée
-  return d ? d.locked : true;
+  return d ? d.locked : null;
 }
 
-
-function bordersFor(x: number, y: number, doors: Doorporte[]) {
+function bordersFor(x: number, y: number, doors: DoorMeta[]) {
   const isWalk = (cx: number, cy: number) => {
     const c = charAt(cx, cy);
     if (!isFloorLike(c)) return false;
